@@ -11,6 +11,7 @@ import {
 } from "fastify-type-provider-zod";
 
 import { env } from "@/env";
+import { GetLinksRoutes } from "./routes/get-links";
 import { CreateLinkRoute } from "./routes/create-link";
 
 const server = fastify();
@@ -48,6 +49,7 @@ server.register(fastifySwaggerUi, {
   routePrefix: "/docs",
 });
 
+server.register(GetLinksRoutes);
 server.register(CreateLinkRoute);
 
 server.listen({ port: env.PORT, host: "0.0.0.0" }).then(() => {
