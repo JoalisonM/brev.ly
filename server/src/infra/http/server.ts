@@ -13,6 +13,8 @@ import {
 import { env } from "@/env";
 import { GetLinksRoutes } from "./routes/get-links";
 import { CreateLinkRoute } from "./routes/create-link";
+import { DeleteLinkRoute } from "./routes/delete-link";
+import { GetLinkByShortUrlRoute } from "./routes/get-link-by-short-url";
 
 const server = fastify();
 
@@ -51,6 +53,8 @@ server.register(fastifySwaggerUi, {
 
 server.register(GetLinksRoutes);
 server.register(CreateLinkRoute);
+server.register(DeleteLinkRoute);
+server.register(GetLinkByShortUrlRoute);
 
 server.listen({ port: env.PORT, host: "0.0.0.0" }).then(() => {
   console.log("🚀 HTTP server running!");

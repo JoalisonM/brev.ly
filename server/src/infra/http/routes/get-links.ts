@@ -43,9 +43,9 @@ export const GetLinksRoutes: FastifyPluginAsyncZod = async (server) => {
       });
 
       if (isRight(result)) {
-        const response = unwrapEither(result);
+        const { total, links } = unwrapEither(result);
 
-        return reply.status(200).send(response);
+        return reply.status(200).send({ total, links });
       }
     }
   );
