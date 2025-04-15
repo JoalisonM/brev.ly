@@ -19,7 +19,7 @@ type DeleteLinkOutput = {
 export async function deleteLink(
   input: DeleteLinkInput
 ): Promise<Either<ResourceNotFoundError, DeleteLinkOutput>> {
-  const { id } = input;
+  const { id } = deleteLinkInput.parse(input);
 
   const linkExists = await db.query.links.findFirst({
     where: eq(schema.links.id, id),

@@ -7,7 +7,7 @@ import { Either, makeLeft, makeRight } from "@/shared/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 const getLinkByShortUrlInput = z.object({
-  shortUrl: z.string(),
+  shortUrl: z.string().url(),
 });
 
 type GetLinkByShortUrlInput = z.input<typeof getLinkByShortUrlInput>;
@@ -19,11 +19,11 @@ type GetLinkByShortUrlOutput = {
   createdAt: Date;
 };
 
-export async function getLinkByShortUrl({
-  shortUrl,
-}: GetLinkByShortUrlInput): Promise<
-  Either<ResourceNotFoundError, GetLinkByShortUrlOutput>
-> {
+export async function getLinkByShortUrl(
+  input: GetLinkByShortUrlInput
+): Promise<Either<ResourceNotFoundError, GetLinkByShortUrlOutput>> {
+  const { shortUrl } = getLinkByShortUrlInput.parse(input);
+
   const result = await db.query.links.findFirst({
     where: eq(schema.links.shortUrl, shortUrl),
   });

@@ -19,7 +19,7 @@ type AccessLinkOutput = {
 export async function increasingNumberOfLinkAccesses(
   input: AccessLinkInput
 ): Promise<Either<ResourceNotFoundError, AccessLinkOutput>> {
-  const { id } = input;
+  const { id } = accessLinkInput.parse(input);
 
   const link = await db.query.links.findFirst({
     where: eq(schema.links.id, id),

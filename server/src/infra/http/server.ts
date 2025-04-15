@@ -4,16 +4,17 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { fastify } from "fastify";
 import {
-  hasZodFastifySchemaValidationErrors,
-  jsonSchemaTransform,
-  serializerCompiler,
   validatorCompiler,
+  serializerCompiler,
+  jsonSchemaTransform,
+  hasZodFastifySchemaValidationErrors,
 } from "fastify-type-provider-zod";
 
 import { env } from "@/env";
 import { GetLinksRoutes } from "./routes/get-links";
 import { CreateLinkRoute } from "./routes/create-link";
 import { DeleteLinkRoute } from "./routes/delete-link";
+import { ExportLinksRoute } from "./routes/export-links";
 import { GetLinkByShortUrlRoute } from "./routes/get-link-by-short-url";
 import { IncreasingNumberOfAccessesRoute } from "./routes/increasing-number-of-link-accesses";
 
@@ -55,6 +56,7 @@ server.register(fastifySwaggerUi, {
 server.register(GetLinksRoutes);
 server.register(CreateLinkRoute);
 server.register(DeleteLinkRoute);
+server.register(ExportLinksRoute);
 server.register(GetLinkByShortUrlRoute);
 server.register(IncreasingNumberOfAccessesRoute);
 

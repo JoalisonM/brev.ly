@@ -8,8 +8,8 @@ import { ShortLinkAlreadyExistsError } from "./errors/short-link-already-exists-
 import { InvalidShortLinkFormatError } from "./errors/invalid-short-link-format-error";
 
 const createLinkInput = z.object({
-  url: z.string(),
-  shortUrl: z.string(),
+  url: z.string().url(),
+  shortUrl: z.string().url(),
 });
 
 type CreateLinkInput = z.infer<typeof createLinkInput>;
