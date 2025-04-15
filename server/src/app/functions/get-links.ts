@@ -20,6 +20,7 @@ type GetLinksOutput = {
     url: string;
     shortUrl: string;
     createdAt: Date;
+    clicks: number;
   }[];
   total: number;
 };
@@ -36,6 +37,7 @@ export async function getLinks(
         url: schema.links.url,
         shortUrl: schema.links.shortUrl,
         createdAt: schema.links.createdAt,
+        clicks: schema.links.clicks,
       })
       .from(schema.links)
       .orderBy((fields) => {

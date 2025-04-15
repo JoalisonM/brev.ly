@@ -8,6 +8,13 @@
       "when": 1744332527304,
       "tag": "0000_happy_mathemanic",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744666169522,
+      "tag": "0001_rich_skin",
+      "breakpoints": true
     }
   ]
 }
