@@ -3,6 +3,7 @@ import { Copy, Trash } from "@phosphor-icons/react";
 import { Link } from "../dtos";
 import { Button } from "./ui/button";
 import { useLinks } from "../store/links";
+import { CopyToClipboardButton } from "./copy-to-clipboard-button";
 
 interface LinkItemProps {
   link: Link;
@@ -27,9 +28,9 @@ export function LinkItem({ link }: LinkItemProps) {
       </span>
 
       <div className="flex items-center justify-center gap-1">
-        <Button variant="icon">
+        <CopyToClipboardButton variant="icon" text={link.shortUrl}>
           <Copy size={16} />
-        </Button>
+        </CopyToClipboardButton>
         <Button variant="icon" onClick={onDeleteLink}>
           <Trash size={16} />
         </Button>
