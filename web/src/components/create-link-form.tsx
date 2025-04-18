@@ -24,18 +24,25 @@ export function CreateLinkForm() {
   const addLink = useLinks((store) => store.addLink);
 
   const {
+    reset,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
   } = useForm({
     resolver: zodResolver(createLinkInput),
   });
 
   async function onSubmit({ url, shortUrl }: CreateLinkInput) {
-    addLink({
-      url,
-      shortUrl,
-    });
+    try {
+      await addLink({
+        url,
+        shortUrl,
+      });
+
+      reset();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -67,7 +74,9 @@ export function CreateLinkForm() {
         </FormItem>
       </div>
 
-      <Button type="submit">Salvar link</Button>
+      <Button type="submit" disabled={!isDirty || !isValid}>
+        Salvar link
+      </Button>
     </form>
   );
 }

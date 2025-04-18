@@ -1,12 +1,6 @@
-import { Links } from "./pages/Links";
-import { Header } from "./components/header";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes/router";
 
 export function App() {
-  return (
-    <div className="flex flex-col items-center justify-center my-0 mx-auto">
-      <Header />
-
-      <Links />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
