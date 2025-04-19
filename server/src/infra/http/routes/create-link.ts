@@ -20,15 +20,28 @@ export const CreateLinkRoute: FastifyPluginAsyncZod = async (server) => {
             .object({
               id: z.string(),
               url: z.string(),
+              clicks: z.number(),
               shortUrl: z.string(),
               createdAt: z.date(),
             })
             .describe("Link created."),
           400: z
-            .object({ message: z.string() })
+            .object({
+              error: z.object({
+                code: z.number(),
+                name: z.string(),
+                message: z.string(),
+              }),
+            })
             .describe("Invalid short link format."),
           409: z
-            .object({ message: z.string() })
+            .object({
+              error: z.object({
+                code: z.number(),
+                name: z.string(),
+                message: z.string(),
+              }),
+            })
             .describe("Short link already exists."),
         },
       },
@@ -47,6 +60,7 @@ export const CreateLinkRoute: FastifyPluginAsyncZod = async (server) => {
         return reply.status(201).send({
           id: response.id,
           url: response.url,
+          clicks: response.clicks,
           shortUrl: response.shortUrl,
           createdAt: response.createdAt,
         });
@@ -56,9 +70,21 @@ export const CreateLinkRoute: FastifyPluginAsyncZod = async (server) => {
 
       switch (error.constructor.name) {
         case "ShortLinkAlreadyExistsError":
-          return reply.status(409).send({ message: error.message });
+          return reply.status(409).send({
+            error: {
+              code: 409,
+              message: error.message,
+              name: "ShortLinkAlreadyExistsError",
+            },
+          });
         case "InvalidShortLinkFormatError":
-          return reply.status(400).send({ message: error.message });
+          return reply.status(400).send({
+            error: {
+              code: 400,
+              message: error.message,
+              name: "InvalidShortLinkFormatError",
+            },
+          });
       }
     }
   );

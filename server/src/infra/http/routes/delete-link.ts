@@ -19,7 +19,13 @@ export const DeleteLinkRoute: FastifyPluginAsyncZod = async (server) => {
             .object({ message: z.string() })
             .describe("Link deleted successfully."),
           404: z
-            .object({ message: z.string() })
+            .object({
+              error: z.object({
+                code: z.number(),
+                name: z.string(),
+                message: z.string(),
+              }),
+            })
             .describe("Resource not found."),
         },
       },
@@ -39,7 +45,13 @@ export const DeleteLinkRoute: FastifyPluginAsyncZod = async (server) => {
 
       switch (error.constructor.name) {
         case "ResourceNotFoundError":
-          return reply.status(404).send({ message: error.message });
+          return reply.status(404).send({
+            error: {
+              code: 404,
+              message: error.message,
+              name: "ResourceNotFoundError",
+            },
+          });
       }
     }
   );

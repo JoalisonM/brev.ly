@@ -9,7 +9,14 @@ import { InvalidShortLinkFormatError } from "./errors/invalid-short-link-format-
 
 const createLinkInput = z.object({
   url: z.string().url(),
-  shortUrl: z.string().url(),
+  shortUrl: z
+    .string()
+    .startsWith("localhost:5173/", {
+      message: "A url deve iniciar com localhost:5173/",
+    })
+    .regex(new RegExp(/^localhost:5173\/[a-z0-9]+(-[a-z0-9]+)*$/g), {
+      message: "Informe uma url minúscula e sem espaço/caractere especial.",
+    }),
 });
 
 type CreateLinkInput = z.infer<typeof createLinkInput>;
@@ -17,6 +24,7 @@ type CreateLinkInput = z.infer<typeof createLinkInput>;
 type RightResponse = {
   id: string;
   url: string;
+  clicks: number;
   shortUrl: string;
   createdAt: Date;
 };
@@ -31,7 +39,7 @@ export async function createLink(
 > {
   const { url, shortUrl } = createLinkInput.parse(input);
 
-  const isValidShortLinkFormat = shortUrl.startsWith("brev.ly/");
+  const isValidShortLinkFormat = shortUrl.startsWith("localhost:5173/");
 
   if (!isValidShortLinkFormat) {
     return makeLeft(new InvalidShortLinkFormatError());
@@ -45,7 +53,7 @@ export async function createLink(
     return makeLeft(new ShortLinkAlreadyExistsError());
   }
 
-  const [{ id, createdAt }] = await db
+  const [{ id, createdAt, clicks }] = await db
     .insert(schema.links)
     .values({
       url,
@@ -53,12 +61,14 @@ export async function createLink(
     })
     .returning({
       id: schema.links.id,
+      clicks: schema.links.clicks,
       createdAt: schema.links.createdAt,
     });
 
   return makeRight({
     id,
     url,
+    clicks,
     shortUrl,
     createdAt,
   });

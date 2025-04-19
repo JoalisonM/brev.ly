@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { ilike } from "drizzle-orm";
 
 import { db } from "@/infra/db";
 import { schema } from "@/infra/db/schemas";
@@ -7,7 +7,7 @@ import { Either, makeLeft, makeRight } from "@/shared/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 const getLinkByShortUrlInput = z.object({
-  shortUrl: z.string().url(),
+  shortUrl: z.string(),
 });
 
 type GetLinkByShortUrlInput = z.input<typeof getLinkByShortUrlInput>;
@@ -25,7 +25,7 @@ export async function getLinkByShortUrl(
   const { shortUrl } = getLinkByShortUrlInput.parse(input);
 
   const result = await db.query.links.findFirst({
-    where: eq(schema.links.shortUrl, shortUrl),
+    where: shortUrl ? ilike(schema.links.shortUrl, `%${shortUrl}%`) : undefined,
   });
 
   if (!result) {

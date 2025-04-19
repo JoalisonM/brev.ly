@@ -2,8 +2,8 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/infra/db";
-import { Either, makeLeft, makeRight } from "@/shared/either";
 import { schema } from "@/infra/db/schemas";
+import { Either, makeLeft, makeRight } from "@/shared/either";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 const accessLinkInput = z.object({
@@ -13,7 +13,11 @@ const accessLinkInput = z.object({
 type AccessLinkInput = z.input<typeof accessLinkInput>;
 
 type AccessLinkOutput = {
-  message: string;
+  id: string;
+  url: string;
+  clicks: number;
+  shortUrl: string;
+  createdAt: Date;
 };
 
 export async function increasingNumberOfLinkAccesses(
@@ -29,12 +33,22 @@ export async function increasingNumberOfLinkAccesses(
     return makeLeft(new ResourceNotFoundError());
   }
 
-  await db
+  const [{ url, shortUrl, clicks, createdAt }] = await db
     .update(schema.links)
     .set({ clicks: link.clicks + 1 })
-    .where(eq(schema.links.id, id));
+    .where(eq(schema.links.id, id))
+    .returning({
+      url: schema.links.url,
+      clicks: schema.links.clicks,
+      shortUrl: schema.links.shortUrl,
+      createdAt: schema.links.createdAt,
+    });
 
   return makeRight({
-    message: "Number of access increasing successfully.",
+    id,
+    url,
+    clicks,
+    shortUrl,
+    createdAt,
   });
 }

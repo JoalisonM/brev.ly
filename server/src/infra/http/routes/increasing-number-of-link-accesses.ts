@@ -17,10 +17,22 @@ export const IncreasingNumberOfAccessesRoute: FastifyPluginAsyncZod = async (
         }),
         response: {
           200: z
-            .object({ message: z.string() })
+            .object({
+              id: z.string(),
+              url: z.string(),
+              clicks: z.number(),
+              shortUrl: z.string(),
+              createdAt: z.date(),
+            })
             .describe("Number of access increasing successfully."),
           404: z
-            .object({ message: z.string() })
+            .object({
+              error: z.object({
+                code: z.number(),
+                name: z.string(),
+                message: z.string(),
+              }),
+            })
             .describe("Resource not found."),
         },
       },
@@ -31,16 +43,28 @@ export const IncreasingNumberOfAccessesRoute: FastifyPluginAsyncZod = async (
       const result = await increasingNumberOfLinkAccesses({ id });
 
       if (isRight(result)) {
-        const { message } = unwrapEither(result);
+        const response = unwrapEither(result);
 
-        return reply.status(200).send({ message });
+        return reply.status(200).send({
+          id: response.id,
+          url: response.url,
+          clicks: response.clicks,
+          shortUrl: response.shortUrl,
+          createdAt: response.createdAt,
+        });
       }
 
       const error = unwrapEither(result);
 
       switch (error.constructor.name) {
         case "ResourceNotFoundError":
-          return reply.status(404).send({ message: error.message });
+          return reply.status(404).send({
+            error: {
+              code: 404,
+              message: error.message,
+              name: "ResourceNotFoundError",
+            },
+          });
       }
     }
   );
