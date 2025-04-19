@@ -60,7 +60,7 @@ export async function exportLinks(): Promise<
   const uploadToStorage = uploadFileToStorage({
     contentType: "text/csv",
     folder: "downloads",
-    fileName: `${new Date().toISOString()}-uploads.csv`,
+    fileName: `${new Date().toISOString()}-links.csv`,
     contentStream: uploadToStorageStream,
   });
 

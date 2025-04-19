@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-import { exportLinks } from "@/app/functions/export-links";
+
 import { unwrapEither } from "@/shared/either";
+import { exportLinks } from "@/app/functions/export-links";
 
 export const ExportLinksRoute: FastifyPluginAsyncZod = async (server) => {
   server.post(
