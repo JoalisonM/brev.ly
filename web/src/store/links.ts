@@ -2,12 +2,13 @@ import { create } from "zustand";
 import { enableMapSet } from "immer";
 import { immer } from "zustand/middleware/immer";
 
-import { CreateLinkParams, GetLinksParams } from "@/dtos";
+import { CreateLinkParams, GetLinksParams, LinksData } from "@/dtos";
 import { addLinkToStorage } from "@/http/add-link-to-storage";
-import { getLinksToStorage } from "@/http/get-links-to-storage";
-import { deleteLinkToStorage } from "@/http/delete-link-to-storage";
-import { getLinkByShortUrlToStorage } from "@/http/get-link-by-short-url-to-storage";
+import { getLinksFromStorage } from "@/http/get-links-from-storage";
+import { deleteLinkFromStorage } from "@/http/delete-link-from-storage";
+import { getLinkByShortUrlFromStorage } from "@/http/get-link-by-short-url-from-storage";
 import { IncreasingLinkAccessesToStorage } from "@/http/increasing-link-accesses-to-storage";
+import { ExportLinksFromStorage } from "@/http/export-links-fom-storage";
 
 export type Link = {
   id: string;
@@ -19,13 +20,14 @@ export type Link = {
 
 type LinksState = {
   link: Link;
-  isLoadingLinks: boolean;
   links: Map<string, Link>;
+  isLoadingExportLinks: boolean;
+  exportLinks: () => Promise<string>;
   deleteLink: (linkId: string) => Promise<void>;
   countAccesses: (linkId: string) => Promise<void>;
   addLink: (data: CreateLinkParams) => Promise<void>;
-  getLinks: (params: GetLinksParams) => Promise<void>;
   getLinkByShortUrl: (shortUrl: string) => Promise<void>;
+  getLinks: (params: GetLinksParams) => Promise<LinksData>;
 };
 
 enableMapSet();
@@ -33,25 +35,22 @@ enableMapSet();
 export const useLinks = create<LinksState, [["zustand/immer", never]]>(
   immer((set, get) => {
     const link = {} as Link;
-    const isLoadingLinks = false;
+    const isLoadingExportLinks = false;
 
     async function getLinks(params: GetLinksParams) {
-      set((state) => {
-        state.isLoadingLinks = true;
-      });
-
-      const result = await getLinksToStorage(params);
+      const result = await getLinksFromStorage(params);
 
       set((state) => {
         result.links.forEach((link) => {
           state.links.set(link.id, link);
         });
-        state.isLoadingLinks = false;
       });
+
+      return result;
     }
 
     async function getLinkByShortUrl(shortUrl: string) {
-      const link = await getLinkByShortUrlToStorage(shortUrl);
+      const link = await getLinkByShortUrlFromStorage(shortUrl);
 
       set((state) => {
         state.link = link;
@@ -77,7 +76,7 @@ export const useLinks = create<LinksState, [["zustand/immer", never]]>(
       const link = get().links.get(linkId);
       if (!link) return;
 
-      await deleteLinkToStorage(linkId);
+      await deleteLinkFromStorage(linkId);
 
       set((state) => {
         state.links.delete(linkId);
@@ -92,15 +91,30 @@ export const useLinks = create<LinksState, [["zustand/immer", never]]>(
       });
     }
 
+    async function exportLinks() {
+      set((state) => {
+        state.isLoadingExportLinks = true;
+      });
+
+      const response = await ExportLinksFromStorage();
+
+      set((state) => {
+        state.isLoadingExportLinks = false;
+      });
+
+      return response.reportUrl;
+    }
+
     return {
       link,
       addLink,
       getLinks,
       deleteLink,
-      isLoadingLinks,
+      exportLinks,
       countAccesses,
       links: new Map(),
       getLinkByShortUrl,
+      isLoadingExportLinks,
     };
   })
 );

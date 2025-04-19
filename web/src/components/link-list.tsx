@@ -1,37 +1,56 @@
-import { DownloadSimple } from "@phosphor-icons/react";
-import { useEffect } from "react";
+import { DownloadSimple, Spinner } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 
 import { Button } from "./ui/button";
+import { LinkItem } from "./link-item";
 import { EmptyList } from "./empty-list";
 import { useLinks } from "@/store/links";
-import { LinkItem } from "./link-item";
 import { LoadingList } from "./loading-list";
+import { downloadUrl } from "@/utils/download-url";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function LinkList() {
   const links = useLinks((store) => store.links);
   const getLinks = useLinks((store) => store.getLinks);
-  const isLoadingLinks = useLinks((store) => store.isLoadingLinks);
+  const exportLinks = useLinks((store) => store.exportLinks);
+  const isLoadingExportLinks = useLinks((store) => store.isLoadingExportLinks);
 
-  useEffect(() => {
-    getLinks({});
-  }, []);
+  const { isLoading } = useQuery({
+    queryKey: ["links"],
+    queryFn: () => getLinks({}),
+  });
+
+  async function handleDownloadFile() {
+    const reportUrl = await exportLinks();
+
+    if (reportUrl) downloadUrl(reportUrl);
+  }
 
   return (
-    <div data-loading={isLoadingLinks} className="flex flex-col w-full">
+    <div data-loading={isLoading} className="flex flex-col w-full">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4 lg:pb-5">
         <h1 className="text-lg">Meus links</h1>
 
-        <Button variant="secondary" type="button" disabled={true}>
-          <DownloadSimple className="h-4 w-4 text-gray-600" />
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={links.size === 0 || isLoadingExportLinks}
+          onClick={() => handleDownloadFile()}
+        >
+          {isLoadingExportLinks && (
+            <Spinner className="h-4 w-4 text-gray-600 animate-spin" />
+          )}
+          {!isLoadingExportLinks && (
+            <DownloadSimple className="h-4 w-4 text-gray-600" />
+          )}
           <span>Baixar CSV</span>
         </Button>
       </div>
 
-      {isLoadingLinks && <LoadingList />}
+      {isLoading && <LoadingList />}
 
-      {!isLoadingLinks && links.size === 0 && <EmptyList />}
+      {!isLoading && links.size === 0 && <EmptyList />}
 
       <ScrollArea className="grid grid-cols-1 max-h-[calc(100dvh-33rem)] lg:max-h-[calc(100dvh-20rem)] divide-y divide-gray-200">
         <div className="divide-y divide-gray-200">

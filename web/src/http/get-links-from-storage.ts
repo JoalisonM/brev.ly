@@ -1,7 +1,7 @@
 import { axios } from "@/services/axios";
 import { GetLinksParams, LinksData } from "@/dtos";
 
-export async function getLinksToStorage({
+export async function getLinksFromStorage({
   page,
   sortBy,
   pageSize,

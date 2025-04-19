@@ -10,8 +10,8 @@ export const buttonVariants = tv({
       default: "px-5 rounded-lg w-full hover:bg-blue-dark",
       outline: "text-gray-500 px-5 bg-transparent border border-gray-200",
       secondary:
-        "bg-gray-200 h-8 rounded-[0.25rem] px-2 text-gray-500 border border-gray-200 hover:border hover:border-blue-base",
-      icon: "h-8 w-8 bg-gray-200 rounded-[0.25rem] text-gray-600 border border-gray-200 hover:border hover:border-blue-base",
+        "bg-gray-200 h-8 rounded-[0.25rem] px-2 text-gray-500 border border-gray-200 transition-all duration-200 hover:border hover:border-blue-base",
+      icon: "h-8 w-8 bg-gray-200 rounded-[0.25rem] text-gray-600 border border-gray-200 transition-all duration-200 hover:border hover:border-blue-base",
     },
   },
 
