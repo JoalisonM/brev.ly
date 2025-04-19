@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import NotFoundImg from "../assets/404.svg";
+import NotFoundImg from "@/assets/404.svg";
 
 export function NotFound() {
   return (

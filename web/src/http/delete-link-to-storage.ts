@@ -1,5 +1,5 @@
-import { axios } from "../services/axios";
+import { axios } from "@/services/axios";
 
-export function deleteLinkToStorage(id: string) {
-  return axios.delete(`/links/${id}`);
+export async function deleteLinkToStorage(linkId: string) {
+  return await axios.delete(`/links/${linkId}`);
 }

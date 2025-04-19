@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
     element: <Redirect />,
   },
   {
-    path: "/not-found",
+    path: "/url/not-found",
     element: <NotFound />,
   },
 ]);

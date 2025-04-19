@@ -1,19 +1,23 @@
 import { z } from "zod";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useLinks } from "../store/links";
 import { FormItem } from "./form-item";
+import { useLinks } from "@/store/links";
+import ShortLinkAlreadyExistsError from "@/errors/short-link-already-exists-error";
 
 const createLinkInput = z.object({
-  url: z.string().nonempty("Informe uma url válida."),
+  url: z
+    .string()
+    .url("Informe uma url válida.")
+    .nonempty("Informe uma url válida."),
   shortUrl: z
     .string()
     .nonempty("Informe uma url minúscula e sem espaço/caractere especial.")
-    .startsWith("brev.ly/", { message: "A url deve iniciar com brev.ly/" })
-    .regex(new RegExp(/^brev\.ly\/[a-z0-9]+(-[a-z0-9]+)*$/g), {
+    .regex(new RegExp(/^[a-z0-9]+(-[a-z0-9]+)*$/g), {
       message: "Informe uma url minúscula e sem espaço/caractere especial.",
     }),
 });
@@ -27,7 +31,7 @@ export function CreateLinkForm() {
     reset,
     register,
     handleSubmit,
-    formState: { errors, isDirty, isValid },
+    formState: { errors, isDirty, isValid, isSubmitting },
   } = useForm({
     resolver: zodResolver(createLinkInput),
   });
@@ -36,12 +40,16 @@ export function CreateLinkForm() {
     try {
       await addLink({
         url,
-        shortUrl,
+        shortUrl: `localhost:5173/${shortUrl}`,
       });
 
       reset();
     } catch (err) {
-      console.error(err);
+      if (err instanceof ShortLinkAlreadyExistsError) {
+        toast.error("Erro no cadastro", {
+          description: err.message,
+        });
+      }
     }
   }
 
@@ -54,28 +62,31 @@ export function CreateLinkForm() {
 
       <div className="flex flex-col gap-4">
         <FormItem label="LINK ORIGINAL" error={errors.url}>
-          <Input
-            id="original-link"
-            type="text"
-            placeholder="www.exemplo.com.br"
-            className="group-data-[status=error]:border-danger group-data-[status=error]:focus:border-danger"
-            {...register("url")}
-          />
+          <Input.Root className="group-data-[status=error]:border-danger group-data-[status=error]:focus-within:border-danger">
+            <Input.Trigger
+              id="original-link"
+              type="text"
+              placeholder="https://exemplo.com"
+              {...register("url")}
+            />
+          </Input.Root>
         </FormItem>
 
         <FormItem label="LINK ENCURTADO" error={errors.shortUrl}>
-          <Input
-            id="short-link"
-            type="text"
-            placeholder="brev.ly/"
-            className="group-data-[status=error]:border-danger group-data-[status=error]:focus:border-danger"
-            {...register("shortUrl")}
-          />
+          <Input.Root className="group-data-[status=error]:border-danger group-data-[status=error]:focus-within:border-danger">
+            <Input.Prefix>brev.ly/</Input.Prefix>
+            <Input.Trigger
+              id="short-link"
+              type="text"
+              {...register("shortUrl")}
+            />
+          </Input.Root>
         </FormItem>
       </div>
 
-      <Button type="submit" disabled={!isDirty || !isValid}>
-        Salvar link
+      <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
+        {!isSubmitting && "Salvar link"}
+        {isSubmitting && "Salvando..."}
       </Button>
     </form>
   );

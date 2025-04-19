@@ -1,6 +1,6 @@
-import { Link } from "../store/links";
-import { axios } from "../services/axios";
-import { CreateLinkParams } from "../dtos";
+import { Link } from "@/store/links";
+import { axios } from "@/services/axios";
+import { CreateLinkParams } from "@/dtos";
 
 export async function addLinkToStorage({
   url,
