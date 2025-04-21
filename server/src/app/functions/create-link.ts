@@ -9,19 +9,24 @@ import { InvalidShortLinkFormatError } from "./errors/invalid-short-link-format-
 
 const createLinkInput = z.object({
   url: z.string().url(),
-  shortUrl: z
-    .string()
-    .startsWith("localhost:5173/", {
-      message: "A url deve iniciar com localhost:5173/",
-    })
-    .regex(new RegExp(/^localhost:5173\/[a-z0-9]+(-[a-z0-9]+)*$/g), {
+  shortUrl: z.string().refine(
+    (val) => {
+      try {
+        const path = new URL("http://" + val).pathname.slice(1);
+        return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(path);
+      } catch {
+        return false;
+      }
+    },
+    {
       message: "Informe uma url minúscula e sem espaço/caractere especial.",
-    }),
+    }
+  ),
 });
 
 type CreateLinkInput = z.infer<typeof createLinkInput>;
 
-type RightResponse = {
+type CreateLinkOutput = {
   id: string;
   url: string;
   clicks: number;
@@ -34,12 +39,26 @@ export async function createLink(
 ): Promise<
   Either<
     ShortLinkAlreadyExistsError | InvalidShortLinkFormatError,
-    RightResponse
+    CreateLinkOutput
   >
 > {
   const { url, shortUrl } = createLinkInput.parse(input);
 
-  const isValidShortLinkFormat = shortUrl.startsWith("localhost:5173/");
+  function isValidShortPath(shortUrl: string): boolean {
+    const regex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+    try {
+      const url = new URL(
+        shortUrl.startsWith("http") ? shortUrl : "http://" + shortUrl
+      );
+      const path = url.pathname.slice(1);
+      return regex.test(path);
+    } catch {
+      return false;
+    }
+  }
+
+  const isValidShortLinkFormat = isValidShortPath(shortUrl);
 
   if (!isValidShortLinkFormat) {
     return makeLeft(new InvalidShortLinkFormatError());
