@@ -34,7 +34,7 @@ export async function exportLinks(): Promise<
       { key: "id", header: "ID" },
       { key: "url", header: "URL" },
       { key: "short_url", header: "Short URL" },
-      { key: "clicks", header: "Clicks" },
+      { key: "clicks", header: "Accesses" },
       { key: "created_at", header: "Created at" },
     ],
   });

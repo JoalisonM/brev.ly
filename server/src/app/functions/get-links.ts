@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { asc, count, desc } from "drizzle-orm";
+import { asc, count, desc, ilike } from "drizzle-orm";
 
 import { db } from "@/infra/db";
 import { schema } from "@/infra/db/schemas";
 import { Either, makeRight } from "@/shared/either";
 
 const getLinksInput = z.object({
+  searchQuery: z.string().optional(),
   sortBy: z.enum(["createdAt"]).optional(),
   sortDirection: z.enum(["asc", "desc"]).optional(),
   page: z.number().optional().default(1),
@@ -28,7 +29,8 @@ type GetLinksOutput = {
 export async function getLinks(
   input: GetLinksInput
 ): Promise<Either<never, GetLinksOutput>> {
-  const { page, pageSize, sortBy, sortDirection } = getLinksInput.parse(input);
+  const { page, pageSize, searchQuery, sortBy, sortDirection } =
+    getLinksInput.parse(input);
 
   const [links, [{ total }]] = await Promise.all([
     db
@@ -40,6 +42,11 @@ export async function getLinks(
         clicks: schema.links.clicks,
       })
       .from(schema.links)
+      .where(
+        searchQuery
+          ? ilike(schema.links.shortUrl, `%${searchQuery}%`)
+          : undefined
+      )
       .orderBy((fields) => {
         if (sortBy && sortDirection === "asc") {
           return asc(fields[sortBy]);
@@ -58,7 +65,13 @@ export async function getLinks(
       .select({
         total: count(schema.links.id),
       })
-      .from(schema.links),
+      .from(schema.links)
+      .where(
+        searchQuery
+          ? ilike(schema.links.shortUrl, `%${searchQuery}%`)
+          : undefined
+      ),
+    ,
   ]);
 
   return makeRight({ links, total });
