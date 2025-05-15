@@ -9,8 +9,6 @@ const getLinksInput = z.object({
   searchQuery: z.string().optional(),
   sortBy: z.enum(["createdAt"]).optional(),
   sortDirection: z.enum(["asc", "desc"]).optional(),
-  page: z.number().optional().default(1),
-  pageSize: z.number().optional().default(20),
 });
 
 type GetLinksInput = z.input<typeof getLinksInput>;
@@ -29,8 +27,7 @@ type GetLinksOutput = {
 export async function getLinks(
   input: GetLinksInput
 ): Promise<Either<never, GetLinksOutput>> {
-  const { page, pageSize, searchQuery, sortBy, sortDirection } =
-    getLinksInput.parse(input);
+  const { searchQuery, sortBy, sortDirection } = getLinksInput.parse(input);
 
   const [links, [{ total }]] = await Promise.all([
     db
@@ -57,9 +54,7 @@ export async function getLinks(
         }
 
         return desc(fields.id);
-      })
-      .offset((page - 1) * pageSize)
-      .limit(pageSize),
+      }),
 
     db
       .select({

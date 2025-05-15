@@ -14,8 +14,6 @@ export const GetLinksRoutes: FastifyPluginAsyncZod = async (server) => {
         querystring: z.object({
           sortBy: z.enum(["createdAt"]).optional(),
           sortDirection: z.enum(["asc", "desc"]).optional(),
-          page: z.coerce.number().optional().default(1),
-          pageSize: z.coerce.number().optional().default(20),
         }),
         response: {
           200: z.object({
@@ -34,12 +32,10 @@ export const GetLinksRoutes: FastifyPluginAsyncZod = async (server) => {
       },
     },
     async (request, reply) => {
-      const { page, pageSize, sortBy, sortDirection } = request.query;
+      const { sortBy, sortDirection } = request.query;
 
       const result = await getLinks({
-        page,
         sortBy,
-        pageSize,
         sortDirection,
       });
 

@@ -36,49 +36,6 @@ describe("Get links", () => {
     ]);
   });
 
-  it("should be able to get paginated links", async () => {
-    const namePattern = `${randomUUID()}second-test`;
-
-    const link1 = await makeLink({
-      shortUrl: `localhost:3333/${namePattern}-1`,
-    });
-    const link2 = await makeLink({
-      shortUrl: `localhost:3333/${namePattern}-2`,
-    });
-    const link3 = await makeLink({
-      shortUrl: `localhost:3333/${namePattern}-3`,
-    });
-    const link4 = await makeLink({
-      shortUrl: `localhost:3333/${namePattern}-4`,
-    });
-
-    let sut = await getLinks({
-      searchQuery: namePattern,
-      page: 1,
-      pageSize: 2,
-    });
-
-    expect(isRight(sut)).toBe(true);
-    expect(unwrapEither(sut).total).toEqual(4);
-    expect(unwrapEither(sut).links).toEqual([
-      expect.objectContaining({ id: link4.id }),
-      expect.objectContaining({ id: link3.id }),
-    ]);
-
-    sut = await getLinks({
-      searchQuery: namePattern,
-      page: 2,
-      pageSize: 2,
-    });
-
-    expect(isRight(sut)).toBe(true);
-    expect(unwrapEither(sut).total).toEqual(4);
-    expect(unwrapEither(sut).links).toEqual([
-      expect.objectContaining({ id: link2.id }),
-      expect.objectContaining({ id: link1.id }),
-    ]);
-  });
-
   it("should be able to get sorted links", async () => {
     const namePattern = `${randomUUID()}third-test`;
 
