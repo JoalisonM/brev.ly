@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { FormItem } from "./form-item";
 import { useLinks } from "@/store/links";
 import ShortLinkAlreadyExistsError from "@/errors/short-link-already-exists-error";
+import { Label } from "./ui/label";
 
 const createLinkInput = z.object({
   url: z
@@ -31,7 +32,7 @@ export function CreateLinkForm() {
     reset,
     register,
     handleSubmit,
-    formState: { errors, isDirty, isValid, isSubmitting },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm({
     resolver: zodResolver(createLinkInput),
   });
@@ -61,7 +62,8 @@ export function CreateLinkForm() {
       <h1 className="text-lg">Novo link</h1>
 
       <div className="flex flex-col gap-4">
-        <FormItem label="LINK ORIGINAL" error={errors.url}>
+        <FormItem error={errors.url}>
+          <Label htmlFor="original-link">LINK ORIGINAL</Label>
           <Input.Root className="group-data-[status=error]:border-danger group-data-[status=error]:focus-within:border-danger">
             <Input.Trigger
               id="original-link"
@@ -72,7 +74,8 @@ export function CreateLinkForm() {
           </Input.Root>
         </FormItem>
 
-        <FormItem label="LINK ENCURTADO" error={errors.shortUrl}>
+        <FormItem error={errors.shortUrl}>
+          <Label htmlFor="short-link">LINK ENCURTADO</Label>
           <Input.Root className="group-data-[status=error]:border-danger group-data-[status=error]:focus-within:border-danger">
             <Input.Prefix>brev.ly/</Input.Prefix>
             <Input.Trigger
@@ -84,7 +87,7 @@ export function CreateLinkForm() {
         </FormItem>
       </div>
 
-      <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
+      <Button type="submit" disabled={!isDirty || isSubmitting}>
         {!isSubmitting && "Salvar link"}
         {isSubmitting && "Salvando..."}
       </Button>

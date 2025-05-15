@@ -1,25 +1,18 @@
 import { Warning } from "@phosphor-icons/react";
-import { ReactNode } from "react";
+import { ComponentProps } from "react";
 import { FieldError } from "react-hook-form";
 
-interface FormItemProps {
-  label: string;
-  children: ReactNode;
+interface FormItemProps extends ComponentProps<"div"> {
   error: FieldError | undefined;
 }
 
-export function FormItem({ children, error, label }: FormItemProps) {
+export function FormItem({ children, error, ...props }: FormItemProps) {
   return (
     <div
+      {...props}
       className="group flex flex-col gap-2"
       data-status={error ? "error" : "valid"}
     >
-      <label
-        htmlFor="original-link"
-        className="text-gray-500 text-xs group-focus-within:text-blue-base group-focus-within:font-medium group-data-[status=error]:text-danger group-data-[status=error]:font-medium"
-      >
-        {label}
-      </label>
       {children}
       {error?.message && (
         <div className="flex items-center gap-1">

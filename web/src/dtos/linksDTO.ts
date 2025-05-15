@@ -17,8 +17,6 @@ export interface LinksData {
 }
 
 export interface GetLinksParams {
-  page?: number;
-  pageSize?: number;
   sortBy?: "createdAt";
   sortDirection?: "asc" | "desc";
 }

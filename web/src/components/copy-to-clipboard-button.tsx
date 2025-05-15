@@ -6,11 +6,13 @@ import { toast } from "sonner";
 
 interface CopyToClipboardButtonProps extends ButtonProps {
   text: string;
+  successMessage: string;
 }
 
 export function CopyToClipboardButton({
   children,
   text,
+  successMessage,
   ...props
 }: CopyToClipboardButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -18,7 +20,7 @@ export function CopyToClipboardButton({
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    toast.info("Link copiado com sucesso");
+    toast.info(successMessage);
     setTimeout(() => setCopied(false), 2000);
   };
 

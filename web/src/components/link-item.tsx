@@ -77,12 +77,18 @@ export function LinkItem({ link }: LinkItemProps) {
         </span>
 
         <div className="flex items-center justify-center gap-1">
-          <CopyToClipboardButton variant="icon" text={link.shortUrl}>
+          <CopyToClipboardButton
+            variant="icon"
+            text={link.shortUrl}
+            successMessage="Link copiado com sucesso."
+          >
+            <span className="sr-only">Copiar link encurtado</span>
             <Copy size={16} />
           </CopyToClipboardButton>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="icon">
+                <span className="sr-only">Deletar link</span>
                 <Trash size={16} />
               </Button>
             </AlertDialogTrigger>
