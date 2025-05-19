@@ -37,7 +37,6 @@ export function LinkItem({ link }: LinkItemProps) {
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="border-b border-gray-200 last:border-0"
     >
       <motion.div
         initial={{
@@ -59,7 +58,7 @@ export function LinkItem({ link }: LinkItemProps) {
           filter: "blur(4px)",
         }}
         transition={{ duration: 0.15, ease: "easeOut" }}
-        className="grid grid-cols-[minmax(7rem,_22rem)_1fr_1fr] items-center gap-4 py-3 lg:py-4"
+        className="grid grid-cols-[minmax(7rem,_22rem)_1fr_1fr] items-center border-t border-gray-200 gap-4 py-3 lg:py-4"
       >
         <div className="flex flex-col gap-1">
           <Link

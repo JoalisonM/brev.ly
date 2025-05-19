@@ -29,7 +29,7 @@ export function LinkList() {
 
   return (
     <div data-loading={isLoading} className="flex flex-col w-full">
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4 lg:pb-5">
+      <div className="flex items-center justify-between pb-4 lg:pb-5">
         <h1 className="text-lg">Meus links</h1>
 
         <Button
@@ -52,14 +52,12 @@ export function LinkList() {
 
       {!isLoading && links.size === 0 && <EmptyList />}
 
-      <ScrollArea className="grid grid-cols-1 max-h-[calc(100dvh-33rem)] lg:max-h-[calc(100dvh-20rem)] divide-y divide-gray-200">
-        <div className="divide-y divide-gray-200">
-          <AnimatePresence initial={false}>
-            {Array.from(links.entries()).map(([linkId, link]) => (
-              <LinkItem key={linkId} link={link} />
-            ))}
-          </AnimatePresence>
-        </div>
+      <ScrollArea className="grid grid-cols-1 max-h-[calc(100dvh-33rem)] lg:max-h-[calc(100dvh-20rem)]">
+        <AnimatePresence initial={false}>
+          {Array.from(links.entries()).map(([linkId, link]) => (
+            <LinkItem key={linkId} link={link} />
+          ))}
+        </AnimatePresence>
       </ScrollArea>
     </div>
   );
